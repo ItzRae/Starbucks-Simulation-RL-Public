@@ -1,0 +1,64 @@
+in-person customer queue, cashier subsystem
+Parameters: 2 Cashiers, lambda_bound 1.8, factor 8, mu 1
+Stored in: IPCS.csv
+
+in-person customer queue, barista subsystem
+Parameters: 3 baristas, lambda_bound 2.7, factor 10, mu 1
+Table: IPBS.csv
+Graph: IPBS Graph.png
+
+Drive Through customer queue, cashier subsystem
+Parameters: 1 cashier, lambda_bound 0.9, factor 10, mu 1
+Table: DTCS.csv
+Graph: DTCS Graph.png
+
+Drive Through customer queue, barista subsystem
+Parameters: 3 baristas, lambda_bound 2.9, factor 10, mu 1
+Table: DTBS.csv
+Graph: DTBS Graph.png
+
+Mobile queue, barista subsystem
+Parameters: 3 baristas, lambda_bound 2.9, factor 10, mu 1
+Table: MOBS.csv
+Graph: MOBS Graph.png
+
+Entire barista subsystem
+Parameters: random.choices([0, 1, 2], weights=(1, 1, 1), k=1), 3 baristas, lambda_bound 2.9, factor 10, mu 1
+Table: BS.csv
+Graph: BS Graph.png
+
+*Entire system: random.choices([0, 1, 2], weights=(1, 1, 1), k=1), 3 baristas, lambda_bound 3.2, factor 10, mu 1
+Folder: Basic Parameters
+
+Entire system with 4 baristas: random.choices([0, 1, 2], weights=(1, 1, 1), k=1), 4 baristas, lambda_bound 3.2, factor 10, mu 1
+Folder: Four baristas
+
+2 Baristas: random.choices([0, 1, 2], weights=(1, 1, 1), k=1), 2 baristas, lambda_bound 3.2, factor 10, barista mu 2, cashier mu 1
+Folder: Two baristas
+
+Final system with bugs fixed: random.choices([0, 1, 2], weights=(1, 1, 1), k=1), 3 baristas, lambda_bound 3.2, factor 10, barista mu 2, cashier mu 1
+
+Partially observable system:
+test 1: random.choices([0, 1, 2], weights=(0.26, 0.27, 0.47), k=1)[0]
+Folder: Observable System/Abandon1.png
+
+HEATMAPS
+IP: origin = random.choices([0, 1, 2, 3], weights=(0.07, 0.10, 0.8, 0.03), k=1)[0]
+DT: origin = random.choices([0, 1, 2], weights=(0.390, 0.6, 0.01), k=1)[0]
+
+1. lambda_val = 0.025, threshold: 5-10, inc by 1
+png file: thresholdheatmap1.png
+
+2. lambda_val = 0.025, threshold: same as above
+y AXIS reversed
+png file: thresholdheatmap1_2.png
+
+3. same lambda, threshold: 5-15 incremented by 2
+labels added
+folder: Test3 in Heatmaps folder
+files: Drive-Thru_output_heatmap.png, In-Person_output_heatmap.png, Mobile_output_heatmap.png
+
+NEW BEHAVIOR MECHANIC SYSTEM
+
+4. lambda_val = 0.025, threshold: 1-5 incremented by 1
+folder: Test 4 Normalized in Heatmaps folder

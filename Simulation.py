@@ -436,8 +436,7 @@ class SystemInstance:
                         customer_choice = random.choices([0, 1], weights=self.patience[customer_patience], k=1)[0]
 
                         # Customer "decision" determined by random weighted choice; either stay in line or switch lines, or even leave the store
-                        # origin = random.choices([0, 1, 2, 3], weights=(0.07, 0.10, 0.8, 0.03), k=1)[0]
-
+                        # origin = random.choices([0, 1, 2, 3], weights=(0.07, 0.10, 0.8, 0.03), k=1)[0
                         if customer_choice == 0:
                             origin = 0
                         else:
@@ -446,9 +445,11 @@ class SystemInstance:
                                 # If the customer switched from the in-person queue to either mobile or drive through queue, increment the number of customers that switched
                                 self.customer_queues[0].inc_switched()
                             else:
+                                # If customer is not Impatient, then they will join the drive through queue, incrementing the number of customers that switched
                                 if customer_patience != 'I':
                                     origin = 2
                                     self.customer_queues[0].inc_switched()
+                                # Otherwise, they will leave the store
                                 else:
                                     origin = 3
 
@@ -470,11 +471,8 @@ class SystemInstance:
                                     self.customer_queues[1].inc_switched()
                                 else:
                                     origin = 3
-                    # # If customer left the store, dont add them to the customer queue
-                    #     if origin == 1 or origin == 3:
-                    #         pass
 
-
+                # Gets maximum number of customers in each queue
                 if customers_present_IP > self.max_customers_IP:
                     self.max_customers_IP = customers_present_IP
 
@@ -491,6 +489,7 @@ class SystemInstance:
                 # The arrival time of the next job equals the current system time plus the interarrival time
                 next_event_times[0] = system_time + get_exp(self.sys_lambda)
 
+                # Keeps track of the number of arrivals from each origin before any switching or abandoning occurs
                 if origin != 3:
                     arrivals += 1
                 if og_origin == 0:
@@ -499,13 +498,6 @@ class SystemInstance:
                     og_arrivals_DT += 1
                 else:
                     og_arrivals_ON += 1
-
-                # if origin == 0:
-                #     arrivals_IP += 1
-                # elif origin == 1:
-                #     arrivals_DT += 1
-                # else:
-                #     arrivals_ON += 1
 
 
             # If the next event is a departure from a cashier
@@ -543,19 +535,6 @@ class SystemInstance:
                     resp_time_cashier_ON += cashier_resp
                     resp_time_barista_ON += barista_resp
 
-                # if order.get_origin() == 0:
-                #     total_response_time_IP += order.get_response_time()
-                #     resp_time_cashier_IP += cashier_resp
-                #     resp_time_barista_IP += barista_resp
-                # elif order.get_origin() == 1:
-                #     total_response_time_DT += order.get_response_time()
-                #     resp_time_cashier_DT += cashier_resp
-                #     resp_time_barista_DT += barista_resp
-                # else:
-                #     total_response_time_ON += order.get_response_time()
-                #     resp_time_cashier_ON += cashier_resp
-                #     resp_time_barista_ON += barista_resp
-            
             # Identifies the departure time of the order that will depart from a cashier the earliest
             next_dep_cashier = self.cashiers[0]
             for cashier in self.cashiers:
@@ -571,8 +550,6 @@ class SystemInstance:
             next_event_times[2] = next_dep_barista.get_next_dep_time()
 
         og_sys_avg_resp_time = og_total_response_time / arrivals
-        # print("og total resp time: ", og_total_response_time)
-        # print("arrivals: ", arrivals)
         og_sys_avg_resp_time_IP = og_total_response_time_IP / og_arrivals_IP
         og_sys_avg_resp_time_DT = og_total_response_time_DT / og_arrivals_DT
         og_sys_avg_resp_time_ON = og_total_response_time_ON / og_arrivals_ON
@@ -580,21 +557,6 @@ class SystemInstance:
         mean_barista_service_time  = total_barista_service_time / arrivals
 
         customer_movement = [(self.customers_left), (self.customer_queues[0].get_switched() / total_arr), (self.customer_queues[1].get_switched() / total_arr)]
-
-        # simulated_barista_average_response_times.append(resp_time_barista / arrivals)
-        # simulated_barista_average_response_times_IP.append(resp_time_barista_IP / og_arrivals_IP)
-        # simulated_barista_average_response_times_DT.append(resp_time_barista_DT / og_arrivals_DT)
-        # simulated_barista_average_response_times_ON.append(resp_time_barista_ON / og_arrivals_ON)
-
-        # simulated_cashier_average_response_times.append(resp_time_cashier / (og_arrivals_IP + og_arrivals_DT))
-        # simulated_cashier_average_response_times_IP.append(resp_time_cashier_IP / og_arrivals_IP)
-        # simulated_cashier_average_response_times_DT.append(resp_time_cashier_DT / og_arrivals_DT)
-        # simulated_cashier_average_response_times_ON.append(resp_time_cashier_ON / og_arrivals_ON)
-
-        # simulated_system_average_response_times.append(og_sys_avg_resp_time)
-        # simulated_system_average_response_times_IP.append(og_sys_avg_resp_time_IP)
-        # simulated_system_average_response_times_DT.append(og_sys_avg_resp_time_DT)
-        # simulated_system_average_response_times_ON.append(og_sys_avg_resp_time_ON)
 
         self.get_switched()
 
@@ -655,37 +617,12 @@ def expected_response_time(lambda_val, mu, k):
     
     return e_t
 
-# def calc_moving_average(arr_resp_times, window_size):
-#     result = []
-#     moving_sum = sum(arr_resp_times[:window_size])
-#     result.append(moving_sum / window_size)
-#     for i in range(len(arr_resp_times) - window_size):
-#         moving_sum
-
-""" queue_length = []
-time_in_queue = []
-ids = []
-# n, sys_lambda, queue_1_cashier_num, queue_2_cashier_num, cashier_mu, barista_num, barista_mu
-system = SystemInstance(1_000_000, 1, 2, 1, 1, 3, 1000)
-# print(1/(1-0.85))
-print(expected_response_time(1.0, 1.0, 2))
-print(system.run())
-
-plt.plot(ids, time_in_queue, label='Actual')
-plt.xlabel('order #')
-plt.ylabel('time in queue')
-plt.title('Simulated vs Actual Average Response Times')
-plt.legend()
-plt.show() """
-
 barista_mu = 1/87 # 87 seconds per order
 
 # factor = 16
 
 # [(min time for cash transaction, max time for cash transaction), (min time for card transaction, max time for card transaction)]
 
-# calculated_cashier_average_response_times = [0] *(factor - 1)
-# calculated_barista_average_response_times = [0] *(factor - 1)  
 simulated_barista_average_response_times = []
 simulated_barista_average_response_times_IP = []
 simulated_barista_average_response_times_DT = []
@@ -714,31 +651,26 @@ customers_switched_from_IP = np.empty((len(thresholds), len(thresholds)))
 customers_switched_from_DT = np.empty((len(thresholds), len(thresholds)))
 
 lambda_val = 0.025
+
+# Iterates through all possible threshold values and runs the simulation for each combination
 for i, IP_threshold in enumerate(thresholds):
         for j, DT_threshold in enumerate(thresholds):
             print("i, j: ", i,",", j)
 
             system = SystemInstance(1_000_000, lambda_val, 2, 1, cashier_service_times, 3, barista_mu, IP_threshold, DT_threshold)
             mean_resp_times = system.run()
+            # Stores response times for each queue in matrix
             threshold_data[i, j] = mean_resp_times[0]
             threshold_data_IP[i, j] = mean_resp_times[1]
             threshold_data_DT[i, j] = mean_resp_times[2]
             threshold_data_ON[i, j] = mean_resp_times[3]
 
+            # Stores probability of leaving the system for each queue in matrix
             customers_left[i, j] = mean_resp_times[7][0]
             customers_switched_from_IP[i, j] = mean_resp_times[7][1]
             customers_switched_from_DT[i, j] = mean_resp_times[7][2]
 
             prob_data[i, j] = mean_resp_times[5]
-
-            # calculated_cashier_average_response_time = expected_response_time(lambda_val, mu, 2)
-            # calculated_barista_average_response_time = expected_response_time(lambda_val, mu, 3)
-            # calculated_cashier_average_response_time = 1/(mu - lambda_val)
-            
-            # calculated_cashier_average_response_times[i - 1] = calculated_cashier_average_response_time
-            # calculated_barista_average_response_times[i - 1] = calculated_barista_average_response_time
-            
-            # n, sys_lambda, queue_1_cashier_num, queue_2_cashier_num, cashier_mu, barista_num, barista_mu
         
 df_sys = pd.DataFrame(threshold_data, columns=thresholds, index=thresholds)
 df_sys.to_csv('sys_threshold_data.csv')
